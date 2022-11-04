@@ -13,9 +13,9 @@ CheckerGame::CheckerGame(sf::RenderWindow& window, const bool& isHuman1, const b
 {
     isPlaying = false; // bucle de juego booleano
     checkerboard = new Checkerboard(window); // crea un nuevo tablero de ajedrez
-    SoundManager::getSoundManager()->addSound("../resources/step.ogg");
-    SoundManager::getSoundManager()->addSound("../resources/big_wall_impact.ogg");
-    SoundManager::getSoundManager()->addSound("../resources/slime_jump.ogg");
+    SoundManager::getSoundManager()->addSound("../resources/bites-ta-da-winner.ogg");
+    SoundManager::getSoundManager()->addSound("../resources/ganar-ganador.ogg");
+    SoundManager::getSoundManager()->addSound("../resources/mario-bros-woo-hoo.ogg");
     SoundManager::getSoundManager()->addSound("../resources/bonus.ogg");
     p1 = new Player (1, isHuman1); // create player 1
     p2 = new Player (2, isHuman2); // create player 2
