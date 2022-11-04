@@ -3,35 +3,31 @@
 using std::vector;
 using std::cout;
 using std::endl;
+
 //HI
 // Constructor predeterminado
-AI::AI()
-{
+AI::AI() {
 
 }
 
-AI::~AI()
-{
+AI::~AI() {
     delete coords;
 }
 
-/* Encuentra el índice de la ficha en movimiento actual para el jugador activo usando la clase Moveable */
-int AI::getCurrentMoveIndex(Player* active, Player* enemy, Checkerboard* checkerboard)
-{
-    vector<Checkerpiece*> activeCheckers = active->getCheckersVector();
-    vector<Checkerpiece*> enemyCheckers = enemy->getCheckersVector();
+/* Encuentra el índice de la ficha en movimiento actual para el jugador activo usando la clase Movimiento */
+int AI::getCurrentMoveIndex(Jugador *active, Jugador *enemy, Tablero *checkerboard) {
+    vector<PiezaDama *> activeCheckers = active->getCheckersVector();
+    vector<PiezaDama *> enemyCheckers = enemy->getCheckersVector();
     // iterar buscando la primera ficha con capacidad de salto
-    for(unsigned int i = 0; i != activeCheckers.size(); ++i)
-        if(Moveable::hasJump(activeCheckers.at(i), enemyCheckers, checkerboard))
-        {
+    for (unsigned int i = 0; i != activeCheckers.size(); ++i)
+        if (Movimiento::hasJump(activeCheckers.at(i), enemyCheckers, checkerboard)) {
             cout << "P2 has found a jump @ index " << i << endl;
             currentIndex = i;
             return i;
         }
     // iterar de nuevo pero solo buscar un movimiento
-    for(unsigned int i = 0; i != activeCheckers.size(); ++i)
-        if(Moveable::hasMove(activeCheckers.at(i), enemyCheckers, checkerboard))
-        {
+    for (unsigned int i = 0; i != activeCheckers.size(); ++i)
+        if (Movimiento::hasMove(activeCheckers.at(i), enemyCheckers, checkerboard)) {
             cout << "P2 has found a move @ index " << i << endl;
             currentIndex = i;
             return i;
@@ -50,16 +46,13 @@ int AI::getCurrentMoveIndex(Player* active, Player* enemy, Checkerboard* checker
 * 5) Mueva y actualice las posiciones para el corrector en movimiento, y hemos terminado.
 * 6) Si no podemos mover o saltar ninguna de las fichas, entonces se acabó el juego para este jugador.
 */
-vector<int>* AI::AI_Move(Player* active, Player* enemy, Checkerboard* checkerboard)
-{
-    vector<Checkerpiece*> activeCheckers = active->getCheckersVector();
-    vector<Checkerpiece*> enemyCheckers = enemy->getCheckersVector();
-    for(unsigned i = 0; i != activeCheckers.size(); ++i)
-    {
+vector<int> *AI::AI_Move(Jugador *active, Jugador *enemy, Tablero *checkerboard) {
+    vector<PiezaDama *> activeCheckers = active->getCheckersVector();
+    vector<PiezaDama *> enemyCheckers = enemy->getCheckersVector();
+    for (unsigned i = 0; i != activeCheckers.size(); ++i) {
         // comprueba si la i-ésima ficha puede saltar
-        coords = Moveable::findJump(activeCheckers.at(i), enemyCheckers, checkerboard); // obtiene coordenadas
-        if(coords != nullptr)
-        {
+        coords = Movimiento::findJump(activeCheckers.at(i), enemyCheckers, checkerboard); // obtiene coordenadas
+        if (coords != nullptr) {
             cout << "P2 has found a jump->coords[0,1] " << coords->at(0) << " " << coords->at(1) << endl;
             return coords; //se detiene aquí y retorna las coordenadas
         }
@@ -70,11 +63,9 @@ vector<int>* AI::AI_Move(Player* active, Player* enemy, Checkerboard* checkerboa
 
 
 // iterar de nuevo, pero esta vez solo buscar un movimiento ya que sabemos que no hay saltos
-    for(int i = 0; i != activeCheckers.size(); ++i)
-    {
-        coords = Moveable::findMove(activeCheckers.at(i), checkerboard);
-        if(coords != nullptr)
-        {
+    for (int i = 0; i != activeCheckers.size(); ++i) {
+        coords = Movimiento::findMove(activeCheckers.at(i), checkerboard);
+        if (coords != nullptr) {
             cout << "P2 has found a move->coords[0,1] " << coords->at(0) << " " << coords->at(1) << endl;
             return coords;
         }

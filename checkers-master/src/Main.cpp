@@ -6,14 +6,13 @@
 */
 
 #include <iostream>
-#include "Checkers.hpp"
+#include "Damas.hpp"
 
-int main()
-{
-	std::cout << "Checkers" << std::endl;
-	
-	Checkers checkers;
-	checkers.start();
+int main() {
+    std::cout << "Damas" << std::endl;
 
-	return 0;
+    Damas checkers;
+    checkers.start();
+
+    return 0;
 }

@@ -9,18 +9,19 @@
 
 #include <iostream>
 #include <vector> // for vectors
-#include "Player.hpp"
+#include "Jugador.hpp"
 
-class AI
-{
+class AI {
 private:
-	int currentIndex;
-	std::vector<int>* coords;
+    int currentIndex;
+    std::vector<int> *coords;
 public:
-	AI();
-	~AI();
-	int getCurrentMoveIndex(Player*, Player*, Checkerboard*); // get the current index
-	std::vector<int>* AI_Move(Player*, Player*, Checkerboard*);
+    AI();
+
+    ~AI();
+
+    int getCurrentMoveIndex(Jugador *, Jugador *, Tablero *); // get the current index
+    std::vector<int> *AI_Move(Jugador *, Jugador *, Tablero *);
 };
 
 #endif

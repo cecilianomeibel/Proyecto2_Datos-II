@@ -2,8 +2,8 @@
 *	This class handles creation of the application. 
 *	An SFML window is created. The window has a main menu and an animation.
 *	Main menu options include (by pressing keyboard):
-*	P - Player verses Player
-*	C - Player verses Computer
+*	P - Jugador verses Jugador
+*	C - Jugador verses Computer
 *	R - View rules
 *	T - View fastest game times.
 *	Menu options are selected by pressing the appropriate key on the keyboard.
@@ -23,16 +23,18 @@
 #include <string> // for strings
 #include <vector> // for vector
 #include <algorithm> // for sort
-#include "CheckerGame.hpp"
+#include "Game.hpp"
 
-class Checkers
-{
+class Damas {
 private:
-	void loadTimes(sf::RenderWindow&, sf::Event&);
-	void animation(sf::RenderWindow&, const int&, const int&);
+    void loadTimes(sf::RenderWindow &, sf::Event &);
+
+    void animation(sf::RenderWindow &, const int &, const int &);
+
 public:
-	Checkers();
-	void start(); // start the Main Menu window
+    Damas();
+
+    void start(); // start the Main Menu window
 };
 
 #endif 

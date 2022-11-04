@@ -1,5 +1,5 @@
 /*
-*	The CheckerGame class has the checker game loop and keeps track of the state of the game (which player is winning).
+*	The Game class has the checker game loop and keeps track of the state of the game (which player is winning).
 *	This class handles manipulations to checkerpieces as well as high level AI operations. For instance, during gameplay a player will click
 *	an arbitrary square to select a checker to move (green highlight), and then the player will click another square to move the checker onto (magenta highlight).
 *	The computer checks to see if that jump or movement is legal by finding the square and then finding the checker that resides on the square.
@@ -33,35 +33,48 @@
 #include <string> // for strings
 #include <vector> // for vectors
 #include "AI.hpp"
-#include "SoundManager.hpp"
+#include "Sonido.hpp"
 
-class CheckerGame
-{
+class Game {
 private:
-	bool isPlaying; // used to keep track of the state of the game
-	static sf::Time timeElapsed; // time elapsed from most recent checkers game
-	static int winner; // winner of the most recent game (0 if there's no winner)
-	Checkerboard* checkerboard;
-	Checkerpiece cpDrawer;
-	Player* p1;
-	Player* p2;
+    bool isPlaying; // used to keep track of the state of the game
+    static sf::Time timeElapsed; // time elapsed from most recent checkers game
+    static int winner; // winner of the most recent game (0 if there's no winner)
+    Tablero *checkerboard;
+    PiezaDama cpDrawer;
+    Jugador *p1;
+    Jugador *p2;
 
-	bool playerHasToJump(Player*&, Player*&);
-	bool playerCannotMove(Player*&, Player*&, Checkerboard*&);
-	void gameLoop(sf::RenderWindow&, sf::Event&);
-	void showWinner(sf::RenderWindow&, sf::Event&);
-	void createTeams();
-	void changeTurn();
-	void handleGameState(sf::Clock&);
-	bool isActivePlayerHuman();
-	void printChecker(Checkerpiece*, const std::string&);
-	void deleteCheckerFromGame(Player*, const int&); 
-	void ifCheckerKinged(Checkerpiece*, Square*);
-	void saveTime(const double&);
+    bool playerHasToJump(Jugador *&, Jugador *&);
+
+    bool playerCannotMove(Jugador *&, Jugador *&, Tablero *&);
+
+    void gameLoop(sf::RenderWindow &, sf::Event &);
+
+    void showWinner(sf::RenderWindow &, sf::Event &);
+
+    void createTeams();
+
+    void changeTurn();
+
+    void handleGameState(sf::Clock &);
+
+    bool isActivePlayerHuman();
+
+    void printChecker(PiezaDama *, const std::string &);
+
+    void deleteCheckerFromGame(Jugador *, const int &);
+
+    void ifCheckerKinged(PiezaDama *, Cuadrado *);
+
+    void saveTime(const double &);
+
 public:
-	CheckerGame(sf::RenderWindow&, const bool&, const bool&);
-	~CheckerGame();
-	void startCheckers(sf::RenderWindow&, sf::Event&);
+    Game(sf::RenderWindow &, const bool &, const bool &);
+
+    ~Game();
+
+    void startCheckers(sf::RenderWindow &, sf::Event &);
 };
 
 #endif
