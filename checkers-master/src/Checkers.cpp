@@ -220,7 +220,7 @@ void Checkers::loadTimes(sf::RenderWindow& window, sf::Event& event)
                 // volver al menu
                 if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::B))
                 {
-                    cout << endl << "Closing Fastest Times View. Returning to Main Menu." << endl;
+                    cout << endl << "Cerrando la vista de los mejores jugadores, volver al menu principal" << endl;
                     view = false;
                 }
 
