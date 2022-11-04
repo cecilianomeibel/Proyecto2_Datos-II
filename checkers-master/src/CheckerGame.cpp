@@ -7,12 +7,12 @@ using std::string;
 using std::ostringstream;
 
 sf::Time CheckerGame::timeElapsed;
-int CheckerGame::winner = 0; // no winner at initialization
+int CheckerGame::winner = 0; // no hay ganador en la inicialización
 
 CheckerGame::CheckerGame(sf::RenderWindow& window, const bool& isHuman1, const bool& isHuman2)
 {
-    isPlaying = false; // game loop boolean
-    checkerboard = new Checkerboard(window); // create a new checkerboard
+    isPlaying = false; // bucle de juego booleano
+    checkerboard = new Checkerboard(window); // crea un nuevo tablero de ajedrez
     SoundManager::getSoundManager()->addSound("../resources/step.ogg");
     SoundManager::getSoundManager()->addSound("../resources/big_wall_impact.ogg");
     SoundManager::getSoundManager()->addSound("../resources/slime_jump.ogg");
@@ -23,7 +23,7 @@ CheckerGame::CheckerGame(sf::RenderWindow& window, const bool& isHuman1, const b
 
 CheckerGame::~CheckerGame()
 {
-    // garbage collect pointers
+    // punteros de recolección de basura
     delete checkerboard;
     checkerboard = nullptr;
     delete p1;
@@ -34,49 +34,45 @@ CheckerGame::~CheckerGame()
 
 void CheckerGame::startCheckers(sf::RenderWindow& window, sf::Event& event)
 {
-    p1->setTurn(true); // p1 starts game
+    p1->setTurn(true); // p1 comienza el juego
     p2->setTurn(false);
     createTeams();
     isPlaying = true;
-    // start the checker game loop
+    // inicia el bucle del juego de damas
     gameLoop(window, event);
 }
 
-// checker game loop (game state: tied, p1 up, p2 up, p1 wins, p2 wins)
+// bucle de juego de damas (estado del juego: empatado, p1 arriba, p2 arriba, p1 gana, p2 gana)
 void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
 {
-    sf::Clock clock; // start the clock
-    int currentX = 0, currentY = 0; // the current coordinates of a player's selection
-    int futureX = 0, futureY = 0; // used after a player selects a checker and wants to move / jump
-    int mouseOverX = 0, mouseOverY = 0; // used for creating the green and purple checker square highlighting
-    bool selecting = true; // determines whether a player is selecting or moving / jumping a checker.
-    bool checkDoubleJump = false; // this is used for determining multiple jump sequences
-    int currentIndex = 0; // index of the current check being selected relative to a player's vector
-    int deleteIndex = 0; // index of the current check being deleted relative to a player's vector
-    int generalDirection = 0; // the general direction, determined by subtracting future from current distances in Moveable class
-    Square* currentSquare = nullptr; // the current square selected
-    Square* futureSquare = nullptr; // the future square selected
-    Square* tempSquare = nullptr; // temp square can serve multiple roles, see the jumpBySquare / jumpByChecker methods in Moveable class.
-    bool activePlayerIsHuman = isActivePlayerHuman(); // used to make sure only window events are processed if human player is active
+    sf::Clock clock; // poner en marcha el reloj
+    int currentX = 0, currentY = 0; // las coordenadas actuales de la selección de un jugador
+    int futureX = 0, futureY = 0; // se usa después de que un jugador selecciona una ficha y quiere moverse/saltar
+    int mouseOverX = 0, mouseOverY = 0; // utilizado para crear el resaltado de cuadros verdes y morados
+    bool selecting = true; // determina si un jugador está seleccionando o moviendo / saltando una ficha.
+    bool checkDoubleJump = false; // esto se usa para determinar múltiples secuencias de salto
+    int currentIndex = 0; // índice del cheque actual seleccionado en relación con el vector de un jugador
+    int deleteIndex = 0; // índice del cheque actual que se elimina en relación con el vector de un jugador
+    int generalDirection = 0; // la dirección general, determinada restando el futuro de las distancias actuales en la clase Movible
+    Square* currentSquare = nullptr; // el cuadrado actual seleccionado
+    Square* futureSquare = nullptr; // el futuro cuadrado seleccionado
+    Square* tempSquare = nullptr; // el cuadrado temporal puede cumplir múltiples roles, consulte los métodos jumpBySquare / jumpByChecker en la clase Moveable.
+    bool activePlayerIsHuman = isActivePlayerHuman(); // se usa para asegurarse de que solo se procesen los eventos de ventana si el jugador humano está activo
 
-    while(isPlaying) // gameplay continues until there is a winner, tie, or the window is terminated.
+    while(isPlaying) // el juego continúa hasta que hay un ganador, un empate o se termina la ventana.
     {
-        /* At the beginning of the turn, check to see if the player can move any checkers
-         NOT CURRENTLY TESTED */
-        //if(playerCannotMove(p1, p2, checkerboard))
-        //std::cout << "No moveable checkers." << std::endl;
 /************************************************************* AI MOVEMENTS ******************************************/
-        if(p2->getTurn() && !p2->getIsHuman()) // player 2 is AI and this is their turn
+        if(p2->getTurn() && !p2->getIsHuman()) // el jugador 2 es AI y este es su turno
         {
-            // AI for player 2
+            // IA para la jugadora 2
             AI ai;
             currentIndex = ai.getCurrentMoveIndex(p2, p1, checkerboard);
-            if(currentIndex == -1) // we need to do this before we set coords (can't set coords to nullptr)
+            if(currentIndex == -1) // tenemos que hacer esto antes de establecer las coordenadas (no se pueden establecer las cuerdas en nullptr)
             {
-                // game over for p2, no more moves available
+                // juego terminado para p2, no más movimientos acordes
                 p2->deleteAllCheckers();
             }
-            else // coords will be either of size 4 or 6
+            else // las coordenadas serán de tamaño 4 o 6
             {
                 std::vector<int> coords;
                 coords = *ai.AI_Move(p2, p1, checkerboard);
@@ -88,15 +84,15 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                     currentY = coords[1];
                     mouseOverX = coords[2];
                     mouseOverY = coords[3];
-                    // update variables, we use the moveable format
+                    // actualizar variables
                     currentSquare = checkerboard->findSquare(coords[0], coords[1]);
-                    futureSquare = checkerboard->findSquare(coords[2], coords[3]); // the square to move to
+                    futureSquare = checkerboard->findSquare(coords[2], coords[3]); // el cuadrado al que moverse
                     if(currentSquare != nullptr && futureSquare != nullptr)
                     {
-                        currentSquare->setOccupied(false); // the square the active checker was sitting on
-                        futureSquare->setOccupied(true); // the square to move to
-                        p2->getChecker(currentIndex)->setPosition((float) coords[2], (float) coords[3]); // update current checker's position
-                        // check if we got kinged
+                        currentSquare->setOccupied(false); // el cuadrado en el que estaba sentado el corrector activo
+                        futureSquare->setOccupied(true); // la plaza para moverse
+                        p2->getChecker(currentIndex)->setPosition((float) coords[2], (float) coords[3]); // actualiza la posición actual de la ficha
+                        // comprobar si nos coronaron
                         ifCheckerKinged(p2->getChecker(currentIndex), futureSquare);
                         printChecker(p2->getChecker(currentIndex), "MOVING");
                         changeTurn(); // change to player 1 turn
@@ -110,20 +106,20 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                     currentY = coords[1];
                     mouseOverX = coords[2];
                     mouseOverY = coords[3];
-                    // update variables, we use the jumpByChecker format
+                    // actualizar variables, usamos el formato jumpByChecker
                     currentSquare = checkerboard->findSquare(coords[0], coords[1]);
-                    futureSquare = checkerboard->findSquare(coords[2], coords[3]); // the square in the middle
-                    tempSquare = checkerboard->findSquare(coords[4], coords[5]); // the square to land on
+                    futureSquare = checkerboard->findSquare(coords[2], coords[3]); // el cuadrado en el medio
+                    tempSquare = checkerboard->findSquare(coords[4], coords[5]); // la plaza para aterrizar
                     if(currentSquare != nullptr && futureSquare != nullptr && tempSquare != nullptr)
                     {
-                        currentSquare->setOccupied(false); // the square the active checker was sitting on
+                        currentSquare->setOccupied(false); // el cuadrado en el que estaba sentado el corrector activo
                         futureSquare->setOccupied(false); // the square to land on
-                        tempSquare->setOccupied(true); // the square that was jumped over
-                        p2->getChecker(currentIndex)->setPosition((float) coords[4], (float) coords[5]); // update current checker's position
-                        // check if we got kinged
+                        tempSquare->setOccupied(true); // la plaza que fue saltada
+                        p2->getChecker(currentIndex)->setPosition((float) coords[4], (float) coords[5]); // actualiza la posición actual de la ficha
+                        // comprobar si nos coronaron
                         ifCheckerKinged(p2->getChecker(currentIndex), tempSquare);
                         printChecker(p2->getChecker(currentIndex), "JUMPING");
-                        // delete the jumped checker (p2's turn, so delete from p1)
+                        // elimina la ficha saltada (el turno de p2, así que elimina de p1)
                         deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
                         changeTurn(); // change to player 1 turn
                         selecting = true;
@@ -132,7 +128,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                 }
             }
         }
-        else if(!p2->getIsHuman() && !p1->getIsHuman()) // both players are computer
+        else if(!p2->getIsHuman() && !p1->getIsHuman()) // Ambas jugadoras son computadora
         {
             // both players use AI class
             // variable updates and checker deletions handled in player class
@@ -140,7 +136,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
             selecting = true;
         }
 /*********************************************************** END OF AI MOVEMENTS ************************************/
-        // for all window events, we assume that the active player is human-controlled.
+        // para todos los eventos de ventana, asumimos que el jugador activo está controlado por humanos.
         while(activePlayerIsHuman && window.pollEvent(event))
         {
             // terminates the application
@@ -168,7 +164,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                         currentSquare = checkerboard->findSquare(currentX, currentY);
                         /* The code for both players selection validation is symmetric, even though only player 1 has comments on the code. */
 /********************************************************** PLAYER SELECTING ********************************************************************************/
-                        if(currentSquare != nullptr && currentSquare->getOccupied()) // validates selection
+                        if(currentSquare != nullptr && currentSquare->getOccupied()) // validar selección
                         {
                             if(p1->getTurn()) // p1's turn
                             {
@@ -176,24 +172,24 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                 if(currentIndex != -1 && currentIndex < p1->getCounter())
                                 {
                                     printChecker(p1->getChecker(currentIndex), "SELECTED");
-                                    // first check if current checker is jumping
+                                    // primero verifica si el verificador actual está saltando
                                     if(Moveable::hasJump(p1->getChecker(currentIndex), p2->getCheckersVector(), checkerboard))
                                     {
-                                        // current checker has a jump so we know it's a valid selection
+                                        // el verificador actual tiene un salto para que sepamos que es una selección válida
                                         selecting = false;
                                     }
                                     else
                                     {
                                         if(playerHasToJump(p1, p2))
-                                            selecting = true; // player has a jump, force the player to select another checker
+                                            selecting = true; // el jugador tiene un salto, obliga al jugador a seleccionar otra ficha
                                         else
-                                            selecting = false; // no available jumps, player is ready to move their selected checker
+                                            selecting = false; // no hay saltos disponibles, el jugador está listo para mover su ficha seleccionada
                                     }
                                 }
                                 else
-                                    selecting = true; // keep selecting (checker wasn't found, probably an error)
+                                    selecting = true; // sigue seleccionando (no se encontró el verificador, probablemente un error)
                             }
-                            else // p2's turn
+                            else // turno de p2
                             {
                                 currentIndex = p2->findCheckerIndex(currentSquare);
                                 if(currentIndex != -1 && currentIndex < p2->getCounter())
@@ -206,28 +202,28 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                     else
                                     {
                                         if(playerHasToJump(p2, p1))
-                                            selecting = true; // player has to jump, force the player to select another checker
+                                            selecting = true; // el jugador tiene que saltar, fuerza al jugador a seleccionar otra ficha
                                         else
-                                            selecting = false; // player is ready to move their selected checker
+                                            selecting = false; // El jugador está listo para mover su corrector seleccionado
                                     }
                                 }
                                 else
-                                    selecting = true; // keep selecting (checker wasn't found)
+                                    selecting = true; // sigue seleccionando (no se encontró el corrector)
                             }
                         }
-                        else // keep selecting, user selected an empty square
+                        else // sigue seleccionando, el usuario seleccionó un cuadrado vacío
                             selecting = true;
 /**************************************************** END OF PLAYERS SELECTING. *****************************************************************************/
                     }
-                    else if(!selecting) // a checkerpiece is moving or jumping
+                    else if(!selecting) // una pieza de ajedrez se mueve o salta
                     {
                         checkDoubleJump = false;
-                        /* Both players will have their movements analyzed to determine if it is a jump, movement, and so forth.
-                            The actual code for each player is symmetric, even though only player 1 has comments. */
+                        /* Se analizarán los movimientos de ambos jugadores para determinar si se trata de un salto, movimiento, etc.
+                               El código real para cada jugador es simétrico, aunque solo el jugador 1 tiene comentarios. */
                         futureX = event.mouseButton.x;
                         futureY = event.mouseButton.y;
-                        futureSquare = checkerboard->findSquare(futureX, futureY); // the square that the player wants to move to
-                        generalDirection = Moveable::findGeneralDirection(currentSquare, futureSquare); // finds the general direction (in degrees) with respect to future square selected
+                        futureSquare = checkerboard->findSquare(futureX, futureY); // El cuadrado al que el jugador quiere moverse
+                        generalDirection = Moveable::findGeneralDirection(currentSquare, futureSquare); // encuentra la dirección general (en grados) con respecto al futuro cuadrado seleccionado
                         std::cout << "Moving in the general Direction of: " << generalDirection << std::endl;
                         if(generalDirection == -1)
                         {
@@ -236,16 +232,16 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                         }
                         else if(futureSquare != nullptr)
                         {
-                            if(futureSquare->getOccupied()) // future square is occupied, so we might be jumping over a checker
+                            if(futureSquare->getOccupied()) // el cuadrado futuro está ocupado, por lo que podríamos estar saltando sobre una ficha
                                 tempSquare = checkerboard->findJumpOntoSquare(futureSquare, generalDirection);
-                            else // futureSquare unnoccupied, Case 1) could be selecting the square to land on after jumping, or Case 2) simply moving
+                            else // FutureSquare desocupado, Caso 1) podría ser seleccionar el cuadrado para aterrizar después de saltar, o Caso 2) simplemente moverse
                                 tempSquare = checkerboard->findIntermSquare(futureSquare, generalDirection);
                         }
                         else
                             std::cout << "The Future Square was not found." << std::endl;
 
 /************************************************************* CODE FOR BOTH PLAYERS MOVEMENTS. *******************************************************/
-                        if(tempSquare != nullptr) // the only way tempSquare is null is when generalDirection == -1 or futureSquare isn't found.
+                        if(tempSquare != nullptr) // la única forma en que tempSquare es nulo es cuando no se encuentra generalDirection == -1 o futureSquare.
                         {
                             if(futureSquare->getFillColor() == sf::Color(92,37,0)) //Color cafe // make sure the future square is moveable
                             {
@@ -253,56 +249,56 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                 {
                                     if(p1->getIsHuman())
                                     {
-                                        // first check if player is selecting the checker to jump over (must call jumpByChecker() and jumpBySquare() before moveable())
+                                        // primero verifica si el jugador está seleccionando la ficha para saltar (debe llamar a jumpByChecker() y jumpBySquare() antes de moveable())
                                         if(Moveable::jumpByChecker(p1->getCheckersVector(), currentSquare, futureSquare, tempSquare, currentIndex))
                                         {
-                                            // update variables
+                                            // actualización de variables
                                             currentSquare->setOccupied(false);
                                             futureSquare->setOccupied(false);
                                             tempSquare->setOccupied(true);
-                                            // update the jumping checker's position
+                                            // actualizar la posición de la ficha saltadora
                                             p1->getChecker(currentIndex)->setPosition(tempSquare->getPosition().x, tempSquare->getPosition().y);
-                                            // check if the jumping checker became a king
+                                            // comprueba si la ficha saltadora se convirtió en rey
                                             ifCheckerKinged(p1->getChecker(currentIndex), tempSquare);
                                             printChecker(p1->getChecker(currentIndex), "JUMPING");
-                                            // delete the jumped checker (p1's turn, so delete from p2)
+                                            // elimina la ficha saltada (el turno de p1, así que elimina de p2)
                                             deleteCheckerFromGame(p2, p2->findCheckerIndex(futureSquare));
-                                            checkDoubleJump = true; // we just completed a jump, let's see if there's a double jump available
+                                            checkDoubleJump = true;// acabamos de completar un salto, veamos si hay un doble salto disponible
                                             changeTurn();
                                             SoundManager::getSoundManager()->playSound(SOUND_JUMP_CHECKER);
                                         }
-                                            // Check if the player is jumping by selecting the square to land on after a jump (future square in this case), temp square is in the middle
+                                            // Comprueba si el jugador está saltando seleccionando el cuadrado para aterrizar después de un salto (futuro cuadrado en este caso), el cuadrado temporal está en el medio
                                         else if(Moveable::jumpBySquare(p1->getCheckersVector(), currentSquare, futureSquare, tempSquare, currentIndex))
                                         {
-                                            // update variables after jumping
+                                            // actualiza las variables después de saltar
                                             futureSquare->setOccupied(true);
                                             currentSquare->setOccupied(false);
-                                            tempSquare->setOccupied(false); // the jumped checker
-                                            // update the jumping checker's position
+                                            tempSquare->setOccupied(false); // la ficha saltada
+                                            // actualiza la posición de la ficha saltadora
                                             p1->getChecker(currentIndex)->setPosition(futureSquare->getPosition().x, futureSquare->getPosition().y);
-                                            // check if the jumping checker became a king
+                                            // comprueba si la ficha saltadora se convirtió en rey
                                             ifCheckerKinged(p1->getChecker(currentIndex), futureSquare);
                                             printChecker(p1->getChecker(currentIndex), "JUMPING");
-                                            // delete the jumped checker (p1's turn, so delete from p2)
+                                            // elimina la ficha saltada (el turno de p1, así que elimina de p2)
                                             deleteCheckerFromGame(p2, p2->findCheckerIndex(tempSquare));
-                                            checkDoubleJump = true; // we just completed a jump, let's see if there's a double jump available
+                                            checkDoubleJump = true; // acabamos de completar un salto, veamos si hay un doble salto disponible
                                             changeTurn();
                                             SoundManager::getSoundManager()->playSound(SOUND_JUMP_SQUARE);
                                         }
-                                            // finally check for moving w/o jump
+                                            // finalmente verifique si se mueve sin saltar
                                         else if(Moveable::moveable(p1->getCheckersVector(), currentSquare, futureSquare, currentIndex) && !futureSquare->getOccupied())
                                         {
-                                            /* This hasJump call is necessary to prevent a checker that is double jumping
-                                            from skipping a jump. This is because the boolean variable 'selecting' doesn't
-                                            go back to true during a double jump, which is where a validation would be done
-                                            to make sure that there are no pending jumps for the active checker. */
+                                            /* Esta llamada hasJump es necesaria para evitar que una ficha salte dos veces
+                                             de saltar un salto. Esto se debe a que la variable booleana 'seleccionar' no
+                                             volver a verdadero durante un doble salto, que es donde se realizaría una validación
+                                             para asegurarse de que no hay saltos pendientes para el verificador activo. */
                                             if(!Moveable::hasJump(p1->getChecker(currentIndex), p2->getCheckersVector(), checkerboard))
                                             {
-                                                // updates position for all the squares and checker(s) in play
+                                                // actualiza la posición de todos los cuadrados y fichas en juego
                                                 futureSquare->setOccupied(true);
                                                 currentSquare->setOccupied(false);
                                                 p1->getChecker(currentIndex)->setPosition(futureSquare->getPosition().x, futureSquare->getPosition().y);
-                                                // check if the checker moved onto a king row
+                                                // verificar si la ficha se movió a una fila de rey
                                                 ifCheckerKinged(p1->getChecker(currentIndex), futureSquare);
                                                 printChecker(p1->getChecker(currentIndex), "MOVING");
                                                 checkDoubleJump = false;
@@ -311,22 +307,22 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                             }
                                         }
 
-                                        // Now we need to figure out if the current check can double jump (this is only checked after a successful jump)
+                                        // Ahora tenemos que averiguar si la verificación actual puede hacer un doble salto (esto solo se verifica después de un salto exitoso)
                                         if(checkDoubleJump && Moveable::hasJump(p1->getChecker(currentIndex), p2->getCheckersVector(), checkerboard))
                                         {
-                                            // double jump available, we update the current square for the next iteration of the game loop
+                                            // doble salto disponible, actualizamos el cuadro actual para la próxima iteración del ciclo del juego
                                             currentX = (int) p1->getChecker(currentIndex)->getPosition().x;
                                             currentY = (int) p1->getChecker(currentIndex)->getPosition().y;
                                             currentSquare = checkerboard->findSquare(currentX, currentY);
-                                            selecting = false; // technically selecting never changed, but we want to ensure that it's still false.
-                                            /* we need to call changeTurn() again because it was already called in the first successful jump
-                                            (so effectively canceling the call altogther and thus it is still player 1's turn). */
+                                            selecting = false; // Técnicamente, la selección nunca cambió, pero queremos asegurarnos de que siga siendo falsa.
+                                            /* necesitamos volver a llamar a changeTurn() porque ya se llamó en el primer salto exitoso
+                                            (así que cancela la llamada por completo y, por lo tanto, sigue siendo el turno del jugador 1). */
                                             changeTurn();
-                                            checkDoubleJump = false; // we just double jumped, so reset this to false.
-                                            tempSquare = nullptr; // reset this to null for the next iteration of game loop
+                                            checkDoubleJump = false; // acabamos de hacer un doble salto, así que reinicia esto a falso.
+                                            tempSquare = nullptr; // restablecer esto a nulo para la siguiente iteración del ciclo del juego
                                         }
                                         else
-                                            selecting = true; // No double jump, turn has changed, go back to selecting
+                                            selecting = true; // Sin doble salto, el giro ha cambiado, vuelve a seleccionar
                                     }
                                 }
                                 else // p2->getTurn()
@@ -389,18 +385,13 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                     }
                                 } // end of p2's turn
 /************************************************* END OF MOVEMENT VALIDATION FOR EACH PLAYER *******************************************************/
-                            } // end of if(futureSquare->getColor() == sf::Color::Black)
-                        } // end of if(tempSquare != nullptr)
-                        else // this is equivalent to the player picking a checker to move and then changing their mind
-                        {
-                            // don't change the turn, but validate the current player, if they can't move any checkerpieces then they lose the game.
+                            }
                             std::cout << "Changing current checker. Code executed @ line " << __LINE__ << std::endl;
                             selecting = true;
                         }
                     } // end of if(!selecting)
                 } // end of if(event.mouseButton.button == sf::Mouse::Left)
-            }
-                /* Save the current mouse coords for the highlight graphic */
+            }/* Guarda las coordenadas actuales del mouse para el gráfico resaltado */
             else if (event.type == sf::Event::MouseMoved)
             {
                 mouseOverX = event.mouseMove.x;
@@ -410,26 +401,29 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
             {
                 std::cout << std::endl << "new window x: " << window.getSize().x << std::endl;
                 std::cout << "new window y: " << window.getSize().y << std::endl << std::endl;
+
             }
-        } // end of window events loop
+        }// eventos de fin de ventana loopcords
 
-        handleGameState(clock); // check the game state
-        activePlayerIsHuman = isActivePlayerHuman(); // determine if the active player is human
+        handleGameState(clock); // comprobar el estado del juego
+        activePlayerIsHuman = isActivePlayerHuman(); //Determinar si el jugador activo es humano
 
-        // SFML window drawing sequence
+// Secuencia de dibujo de la ventana SFML
         window.clear();
         checkerboard->drawGrid(window, mouseOverX, mouseOverY, currentX, currentY, selecting);
         cpDrawer.drawCheckers(window, p1->getCheckersVector());
         cpDrawer.drawCheckers(window, p2->getCheckersVector());
         window.display();
+
     } // end of isPlaying
 } // end of gameLoop
 
-// change a player's turn
+// cambios
 void CheckerGame::changeTurn()
 {
     p1->setTurn(!p1->getTurn());
     p2->setTurn(!p2->getTurn());
+
 }
 
 // create the teams
@@ -457,15 +451,16 @@ void CheckerGame::createTeams()
         }
         startingY += YOFFSET;
         startingX = 0;
+
     }
 }
 
-// checks to see if the player has other jumps
+// comprueba si el jugador tiene otros saltos
 bool CheckerGame::playerHasToJump(Player*& active, Player*& notActive)
 {
-    /*	Iterate through every checker in the current player's vector,
-    we need to make sure the player doesn't have any other available jumps
-    before they can move their selected checker. */
+    /* Iterar a través de cada ficha en el vector del jugador actual,
+     debemos asegurarnos de que el jugador no tenga otros saltos disponibles
+     antes de que puedan mover su ficha seleccionada. */
     for(int i = 0; i < active->getCounter(); ++i)
         if(Moveable::hasJump(active->getChecker(i), notActive->getCheckersVector(), checkerboard))
             return true; // player has to jump
@@ -473,8 +468,8 @@ bool CheckerGame::playerHasToJump(Player*& active, Player*& notActive)
 }
 
 /*
-*	Determines whether the active player can move any of their checkers.
-*	Uses an AI to find a current move for the player (-1 means their is no current move).
+* Determina si el jugador activo puede mover cualquiera de sus fichas.
+* Utiliza una IA para encontrar un movimiento actual para el jugador (-1 significa que no hay movimiento actual).
 */
 bool CheckerGame::playerCannotMove(Player*& p1, Player*& p2, Checkerboard*& checkerboard)
 {
@@ -515,9 +510,9 @@ void CheckerGame::handleGameState(sf::Clock& clock)
         isPlaying = false;
         std::cout << std::endl << "Player Two Wins " << std::endl;
         winner = p2->getNumber();
-        CheckerGame::timeElapsed = clock.restart(); // get the length of the game
+        CheckerGame::timeElapsed = clock.restart(); // obtener la duración del juego
         std::cout << "Time Elapsed (in minutes): " << (CheckerGame::timeElapsed.asSeconds() / 60) << std::endl;
-        saveTime((CheckerGame::timeElapsed.asSeconds() / 60)); // save the time to external storage
+        saveTime((CheckerGame::timeElapsed.asSeconds() / 60)); // guarda el tiempo en el almacenamiento externo
     }
         // player 1 wins
     else if(p2->getCounter() == 0)
@@ -525,9 +520,9 @@ void CheckerGame::handleGameState(sf::Clock& clock)
         isPlaying = false;
         std::cout << std::endl << "Player One Wins " << std::endl;
         winner = p1->getNumber();
-        CheckerGame::timeElapsed = clock.restart(); // get the length of the game
+        CheckerGame::timeElapsed = clock.restart(); // obtener la duración del juego
         std::cout << "Time Elapsed (in minutes): " << (CheckerGame::timeElapsed.asSeconds() / 60) << std::endl;
-        saveTime((CheckerGame::timeElapsed.asSeconds() / 60)); // save the time to external storage
+        saveTime((CheckerGame::timeElapsed.asSeconds() / 60)); // guarda el tiempo en el almacenamiento externo
     }
         // p2 leads
     else if(p1->getCounter() < p2->getCounter())
@@ -556,18 +551,19 @@ bool CheckerGame::isActivePlayerHuman()
         return false; // default false
 }
 
-// print the selected checker's credentials
+// imprimir las credenciales del verificador seleccionado
 void CheckerGame::printChecker(Checkerpiece* selected, const std::string& action)
 {
     std::cout << action << " Checker (x, y): (" << selected->getPosition().x << ", "
               << selected->getPosition().y << ")" << " King: "
               << selected->getKing() << std::endl;
+
 }
 
 // delete from the inactive player
 void CheckerGame::deleteCheckerFromGame(Player* deleteFrom, const int& deleteIndex)
 {
-    // delete the jumped checker (deleteFrom is the inactive player who's checker got jumped)
+    // elimina la ficha saltada (delete_From es el jugador inactivo cuya ficha saltó)
     if(deleteIndex != -1 && deleteIndex < deleteFrom->getCounter())
     {
         std::cout << "DELETING Checker (x, y): (" << deleteFrom->getChecker(deleteIndex)->getPosition().x << ", "
@@ -577,13 +573,13 @@ void CheckerGame::deleteCheckerFromGame(Player* deleteFrom, const int& deleteInd
     }
 }
 
-// check if the active checkerpiece became a king
+// comprobar si la pieza de ajedrez activa se convirtió en un rey
 void CheckerGame::ifCheckerKinged(Checkerpiece* checker, Square* square)
 {
     if((square->getRow() == KING_ROW_0 && checker->getKingRow() == KING_ROW_0)
        || (square->getRow() == KING_ROW_7 && checker->getKingRow() == KING_ROW_7))
     {
-        checker->setKing(true); // update the checker to be a king
+        checker->setKing(true); // actualizar el corrector para ser un rey
         SoundManager::getSoundManager()->playSound(SOUND_KING);
     }
 }
@@ -592,7 +588,7 @@ void CheckerGame::ifCheckerKinged(Checkerpiece* checker, Square* square)
 void CheckerGame::saveTime(const double& time)
 {
     std::cout << "Saving the time to game_times.sav" << std::endl;
-    std::ofstream file("game_times.sav", std::ios::app); // name the file to save to (make sure to append)
+    std::ofstream file("game_times.sav", std::ios::app); //actualizar el corrector para ser un rey
     if(!file)
         std::cerr << "File won't open." << std::endl;
     else
@@ -603,7 +599,7 @@ void CheckerGame::saveTime(const double& time)
     }
 }
 
-/* Show the winner on the SFML window after game ends */
+/* Mostrar el ganador en la ventana de SFML después de que termine el juego */
 void CheckerGame::showWinner(sf::RenderWindow& window, sf::Event& event)
 {
     ostringstream ostr; // create ostream
@@ -619,6 +615,13 @@ void CheckerGame::showWinner(sf::RenderWindow& window, sf::Event& event)
     text.setPosition(0, 0); // draw slightly below the title
     text.setColor(sf::Color::Black);
     text.setString(winnerText);
+
+    //Rectangulo horizontal
+    sf::RectangleShape tile2;
+    tile2.setSize(sf::Vector2f(70.f,100.f));
+    tile2.setPosition(sf::Vector2f(50,454));
+    tile2.setFillColor(sf::Color(139,69,19)); //Color cafe
+    window.draw(tile2);
 
     // this loop keeps the top 10 best scores on the window
     bool view = true;
@@ -637,7 +640,10 @@ void CheckerGame::showWinner(sf::RenderWindow& window, sf::Event& event)
             window.clear(sf::Color::White);
             window.draw(text); // draw the times and header
             window.display();
+
+
         }
     }
+
 
 }
