@@ -593,7 +593,7 @@ void CheckerGame::saveTime(const double& time)
         std::cerr << "File won't open." << std::endl;
     else
     {
-        file << time; // save the time to the file
+        file << time; // save the tkkkime to the file
         file << "\n"; // add a newline
         file.close(); // close the file
     }
