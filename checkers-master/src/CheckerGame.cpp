@@ -94,7 +94,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                         p2->getChecker(currentIndex)->setPosition((float) coords[2], (float) coords[3]); // actualiza la posición actual de la ficha
                         // comprobar si nos coronaron
                         ifCheckerKinged(p2->getChecker(currentIndex), futureSquare);
-                        printChecker(p2->getChecker(currentIndex), "MOVING");
+                        printChecker(p2->getChecker(currentIndex), "MOVIENDO");
                         changeTurn(); // change to player 1 turn
                         selecting = true;
                         SoundManager::getSoundManager()->playSound(SOUND_MOVE);
@@ -118,7 +118,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                         p2->getChecker(currentIndex)->setPosition((float) coords[4], (float) coords[5]); // actualiza la posición actual de la ficha
                         // comprobar si nos coronaron
                         ifCheckerKinged(p2->getChecker(currentIndex), tempSquare);
-                        printChecker(p2->getChecker(currentIndex), "JUMPING");
+                        printChecker(p2->getChecker(currentIndex), "SALTANDO");
                         // elimina la ficha saltada (el turno de p2, así que elimina de p1)
                         deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
                         changeTurn(); // change to player 1 turn
@@ -142,14 +142,14 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
             // terminates the application
             if(event.type == sf::Event::Closed)
             {
-                std::cout << std::endl << "Checkers Application Terminated." << std::endl;
+                std::cout << std::endl << "Se ha cerrado el juego" << std::endl;
                 isPlaying = false;
                 window.close();
             }
                 // go back to the main menu (login screen)
             else if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::B))
             {
-                std::cout << std::endl << "Terminating the game, returning to Main Menu." << std::endl;
+                std::cout << std::endl << "Ha terminado el juego, vuelva al menu principal" << std::endl;
                 isPlaying = false;
             }
             else if (event.type == sf::Event::MouseButtonPressed) // handles game movements
@@ -171,7 +171,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                 currentIndex = p1->findCheckerIndex(currentSquare);
                                 if(currentIndex != -1 && currentIndex < p1->getCounter())
                                 {
-                                    printChecker(p1->getChecker(currentIndex), "SELECTED");
+                                    printChecker(p1->getChecker(currentIndex), "SELECCIONADO");
                                     // primero verifica si el verificador actual está saltando
                                     if(Moveable::hasJump(p1->getChecker(currentIndex), p2->getCheckersVector(), checkerboard))
                                     {
@@ -194,7 +194,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                 currentIndex = p2->findCheckerIndex(currentSquare);
                                 if(currentIndex != -1 && currentIndex < p2->getCounter())
                                 {
-                                    printChecker(p2->getChecker(currentIndex), "SELECTED");
+                                    printChecker(p2->getChecker(currentIndex), "SELECCIONADO");
                                     if(Moveable::hasJump(p2->getChecker(currentIndex), p1->getCheckersVector(), checkerboard))
                                     {
                                         selecting = false;
@@ -260,7 +260,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                             p1->getChecker(currentIndex)->setPosition(tempSquare->getPosition().x, tempSquare->getPosition().y);
                                             // comprueba si la ficha saltadora se convirtió en rey
                                             ifCheckerKinged(p1->getChecker(currentIndex), tempSquare);
-                                            printChecker(p1->getChecker(currentIndex), "JUMPING");
+                                            printChecker(p1->getChecker(currentIndex), "SALTANDO");
                                             // elimina la ficha saltada (el turno de p1, así que elimina de p2)
                                             deleteCheckerFromGame(p2, p2->findCheckerIndex(futureSquare));
                                             checkDoubleJump = true;// acabamos de completar un salto, veamos si hay un doble salto disponible
@@ -278,7 +278,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                             p1->getChecker(currentIndex)->setPosition(futureSquare->getPosition().x, futureSquare->getPosition().y);
                                             // comprueba si la ficha saltadora se convirtió en rey
                                             ifCheckerKinged(p1->getChecker(currentIndex), futureSquare);
-                                            printChecker(p1->getChecker(currentIndex), "JUMPING");
+                                            printChecker(p1->getChecker(currentIndex), "SALTANDO");
                                             // elimina la ficha saltada (el turno de p1, así que elimina de p2)
                                             deleteCheckerFromGame(p2, p2->findCheckerIndex(tempSquare));
                                             checkDoubleJump = true; // acabamos de completar un salto, veamos si hay un doble salto disponible
@@ -300,7 +300,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                                 p1->getChecker(currentIndex)->setPosition(futureSquare->getPosition().x, futureSquare->getPosition().y);
                                                 // verificar si la ficha se movió a una fila de rey
                                                 ifCheckerKinged(p1->getChecker(currentIndex), futureSquare);
-                                                printChecker(p1->getChecker(currentIndex), "MOVING");
+                                                printChecker(p1->getChecker(currentIndex), "MOVIENDO");
                                                 checkDoubleJump = false;
                                                 changeTurn();
                                                 SoundManager::getSoundManager()->playSound(SOUND_MOVE);
@@ -336,7 +336,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                             tempSquare->setOccupied(true);
                                             p2->getChecker(currentIndex)->setPosition(tempSquare->getPosition().x, tempSquare->getPosition().y);
                                             ifCheckerKinged(p2->getChecker(currentIndex), tempSquare);
-                                            printChecker(p2->getChecker(currentIndex), "JUMPING");
+                                            printChecker(p2->getChecker(currentIndex), "SALTANDO");
                                             deleteCheckerFromGame(p1, p1->findCheckerIndex(futureSquare));
                                             checkDoubleJump = true;
                                             changeTurn();
@@ -349,7 +349,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                             tempSquare->setOccupied(false);
                                             p2->getChecker(currentIndex)->setPosition(futureSquare->getPosition().x, futureSquare->getPosition().y);
                                             ifCheckerKinged(p2->getChecker(currentIndex), futureSquare);
-                                            printChecker(p2->getChecker(currentIndex), "JUMPING");
+                                            printChecker(p2->getChecker(currentIndex), "SALTANDO");
                                             deleteCheckerFromGame(p1, p1->findCheckerIndex(tempSquare));
                                             checkDoubleJump = true;
                                             changeTurn();
@@ -363,7 +363,7 @@ void CheckerGame::gameLoop(sf::RenderWindow& window, sf::Event& event)
                                                 currentSquare->setOccupied(false);
                                                 p2->getChecker(currentIndex)->setPosition(futureSquare->getPosition().x, futureSquare->getPosition().y);
                                                 ifCheckerKinged(p2->getChecker(currentIndex), futureSquare);
-                                                printChecker(p2->getChecker(currentIndex), "MOVING");
+                                                printChecker(p2->getChecker(currentIndex), "MOVIENDO");
                                                 checkDoubleJump = false;
                                                 changeTurn();
                                                 SoundManager::getSoundManager()->playSound(SOUND_MOVE);
@@ -508,7 +508,7 @@ void CheckerGame::handleGameState(sf::Clock& clock)
     else if(p1->getCounter() == 0)
     {
         isPlaying = false;
-        std::cout << std::endl << "Player Two Wins " << std::endl;
+        std::cout << std::endl << "Jugador dos gana " << std::endl;
         winner = p2->getNumber();
         CheckerGame::timeElapsed = clock.restart(); // obtener la duración del juego
         std::cout << "Time Elapsed (in minutes): " << (CheckerGame::timeElapsed.asSeconds() / 60) << std::endl;
@@ -518,7 +518,7 @@ void CheckerGame::handleGameState(sf::Clock& clock)
     else if(p2->getCounter() == 0)
     {
         isPlaying = false;
-        std::cout << std::endl << "Player One Wins " << std::endl;
+        std::cout << std::endl << "Jugador uno gana" << std::endl;
         winner = p1->getNumber();
         CheckerGame::timeElapsed = clock.restart(); // obtener la duración del juego
         std::cout << "Time Elapsed (in minutes): " << (CheckerGame::timeElapsed.asSeconds() / 60) << std::endl;
@@ -558,6 +558,7 @@ void CheckerGame::printChecker(Checkerpiece* selected, const std::string& action
               << selected->getPosition().y << ")" << " King: "
               << selected->getKing() << std::endl;
 
+
 }
 
 // delete from the inactive player
@@ -566,7 +567,7 @@ void CheckerGame::deleteCheckerFromGame(Player* deleteFrom, const int& deleteInd
     // elimina la ficha saltada (delete_From es el jugador inactivo cuya ficha saltó)
     if(deleteIndex != -1 && deleteIndex < deleteFrom->getCounter())
     {
-        std::cout << "DELETING Checker (x, y): (" << deleteFrom->getChecker(deleteIndex)->getPosition().x << ", "
+        std::cout << "Eliminando Checker (x, y): (" << deleteFrom->getChecker(deleteIndex)->getPosition().x << ", "
                   << deleteFrom->getChecker(deleteIndex)->getPosition().y
                   << ")" << " King: " << deleteFrom->getChecker(deleteIndex)->getKing() << std::endl;
         deleteFrom->deleteChecker(deleteIndex);
