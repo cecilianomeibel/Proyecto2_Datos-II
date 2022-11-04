@@ -3,17 +3,12 @@
 using std::vector;
 using std::abs;
 
-/*
-*	The moveable function determines whether or not the checker
-*	is making a valid movement. It does not check whether or not the future
-*	square it is moving to is occupied, that is done externally in CheckerGame class.
-*	We first check if the checker is moving onto a square containing a friendly checker.
-*	Then we check both cases of wether or not the current checker is a king.
-*	If it is a pawn, we check to make sure it is moving in the right direction,
-*	otherwise it is not necessary because a king can move in any direciton.
-*	Lastly, we check to see if the distance is moveable (one square at a time).
-*	All default, or unchecked cases will return false.
-*/
+
+/**Determina si la pieza checker está haciendo un moviendo valido
+ * Se verifica primero si al cuadro donde se está moviendo la pieza hay una pieza enemiga.
+ * Se verifica que alguno de las dos clases que contienen al jugador humano y jugador maquina, tenga un rey.
+ * Se verifica que la distancia sea valida para mover la pieza, en este caso una cuadro a la vez
+ * */
 bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Square* future, const int& currentIndex)
 {
     if(friendly(checkers, future))
@@ -21,13 +16,13 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
 
     if(static_cast<unsigned>(currentIndex) < checkers.size())
     {
-        // if a king is being moved
+        // en caso de que un rey se este moviendo
         if(checkers.at(currentIndex)->getKing())
         {
-            // movement on the checkerboard from current to future square is always the same color (black to black)
+            // movimiento en la tabla actual hasta el siguiente seguirá manteniendo el mismo color
             if(current->getFillColor() == future->getFillColor())
             {
-                // make sure that the distance is within the approriate distance range
+                // asegurar que la distancia movible este dentro de un rango valido
                 if(moveableDistance(static_cast<int>(current->getPosition().x), static_cast<int>(current->getPosition().y),
                                     static_cast<int>(future->getPosition().x), static_cast<int>(future->getPosition().y)))
                     return true;
@@ -37,16 +32,17 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
             else
                 return false;
         }
-            // otherwise a pawn is being moved (can only move diagonal, "forwards", which is determined by their king row)
+
+            // caso contrario, se está moviendo un peón
         else
         {
-            // movement on the checkerboard from current to future square is always the same color (black to black)
+            // movimiento en la tabla actual hasta el siguiente seguirá manteniendo el mismo color
             if(current->getFillColor() == future->getFillColor())
             {
-                // case: KING_ROW_0 (northern part of the checkerboard relative to the monitor)
+                // caso: Rey en la columna 0, es decir, al norte de la tabla
                 if(checkers.at(currentIndex)->getKingRow() == KING_ROW_0)
                 {
-                    // pawn is headed towards ROW 0, so y must decrease in the computer's coordinate system
+                    // El peón se encuentra en la fila 0, por lo que debe de disminuir en las coordenadas.
                     if(current->getPosition().y > future->getPosition().y)
                     {
                         if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -57,10 +53,10 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
                     else
                         return false;
                 }
-                    // case: KING_ROW_7 (southern part of the checkerboard relative to the monitor)
+                    // caso: el rey se encuentra en la fila 7.
                 else if(checkers[currentIndex]->getKingRow() == KING_ROW_7)
                 {
-                    // pawn is headed towards ROW 7, so y must increase in the computer's coordinate system
+                    // el peón se encuentra en la fila 7, por lo que se debe de incrementar en las coordenadas
                     if(current->getPosition().y < future->getPosition().y)
                     {
                         if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -79,21 +75,22 @@ bool Moveable::moveable(std::vector<Checkerpiece*> checkers, Square* current, Sq
         }
     }
     else
-        return false; // default return of false
+        return false; // el valor por defecto que retorna es falso
 }
 
 // overloaded moveable which will directly check to make sure the future square isn't occupied
+// Se encarga de que el siguiente cuadro no este ocupado.
 bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
 {
-    // check to make sure future position isn't already occupied.
+    // permite ver si el espacio no ha sido ocupado
     if(future->getOccupied())
         return false;
-    else if(checker->getKing()) // a king is being moved
+    else if(checker->getKing()) // el rey está siendo movido.
     {
-        // movement on the checkerboard from current to future square is always the same color (black to black)
+        // movimiento en la tabla actual hasta el siguiente seguirá manteniendo el mismo color
         if(current->getFillColor() == future->getFillColor())
         {
-            // no need to check forward or backward movement for kings
+            // no necesita verificar adelante o hacia atras en la condición de una pieza rey
             if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
                 return true;
             else
@@ -102,15 +99,15 @@ bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
         else
             return false;
     }
-    else // a pawn is being moved (can only move diagonal and in one direction)
+    else // en este caso el peón está siendo movido
     {
-        // movement on the checkerboard from current to future square is always the same color (black to black)
+        // movimiento en la tabla actual hasta el siguiente seguirá manteniendo el mismo color
         if(current->getFillColor() == future->getFillColor())
         {
-            // pawns can only move forward, where forward is defined by what team the pawn is on
+            // el movimiento unico del peón es para adelante, donde se define de que equipo es el peón
             if(checker->getKingRow() == KING_ROW_0)
             {
-                // pawn is headed towards ROW 0, so y decreases in the computer's coordinate system
+                // el peón se dirigue hacia la fila 0, por lo que en las coordenadas de la pantalla disminuye
                 if(current->getPosition().y > future->getPosition().y)
                 {
                     if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -121,10 +118,10 @@ bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
                 else
                     return false;
             }
-                // this pawn can only move "down" the board, in terms of the computer's coordinate system, y must increase
+                // Este peón solo puede bajar, es decir, que la coordenada aumenta en la pantalla
             else if(checker->getKingRow() == KING_ROW_7)
             {
-                // pawn is headed towards ROW 7, so y must increase in the computer's coordinate system
+                // el peón se dirige a la fila 7, por lo que las coordenadas en la pantalla aumnentan
                 if(current->getPosition().y < future->getPosition().y)
                 {
                     if(moveableDistance((int) current->getPosition().x, (int) current->getPosition().y, (int) future->getPosition().x, (int) future->getPosition().y))
@@ -143,16 +140,16 @@ bool Moveable::moveable(Checkerpiece* checker, Square* current, Square* future)
     }
 }
 
-// helper function that checks the distance between current and future relative to the offset.
+// Función auxiliar que comprueba la distancia entre el presente y el futuro en relación con el desplazamiento.
 bool Moveable::moveableDistance(const int& currentX, const int& currentY, const int& futureX, const int& futureY)
 {
     if((abs(currentX - futureX) <= XOFFSET) && (futureX <= (XOFFSET * SQUARES_HORIZONTAL)) && (futureX >= 0))
         if((abs(currentY - futureY) <= YOFFSET) && (futureY <= (YOFFSET * SQUARES_VERTICAL)) && (futureY >= 0))
-            return true; // distance is moveable
-    return false; // distance is not moveable
+            return true; // la distancia es movible
+    return false; // la distancia es no movible
 }
 
-// find the general direction from current relative to future (in terms of a 2-dimensional unit circle)
+// encontrar la dirección general del actual en relación con el futuro (en términos de un círculo unitario de 2 dimensiones)
 int Moveable::findGeneralDirection(Square* current, Square* future)
 {
     if((current->getPosition().x < future->getPosition().x) && (current->getPosition().y == future->getPosition().y))
@@ -174,13 +171,13 @@ int Moveable::findGeneralDirection(Square* current, Square* future)
     else return -1;
 }
 
-/*
-*	jumpBySquare checks to see if the player can perform a jump by choosing the square to land on following a jump. 
-*	Future square is the square to land on followin the jump (should be unoccupied).
-*	Temp square is the middle square (should be occupied).
-*	First we check to make sure that the moving checker isn't jumping over a friendly checker.
-*	Then we check the distance between current->temp and temp->future by calling moveable().
-*/
+/**
+ * jumpBySquare: verifica si el jugador puede realizar un salto si escoge algún cuadro para moverse.
+ * El siguiente cuadro es el cuadro donde está destinado a saltar pero este debe estar desocupado.
+ * Cuadro temporal es el cuadro de en medio por lo que si deberia de estar ocupado.
+ * Primero verificar si el salto del jugador no cae encima de un pieza aliada
+ * Se verifica la distancia entre el cuadro actual al temporal para seguir al cudro final/siguiente llamando a la metodo moveable()
+ * */
 bool Moveable::jumpBySquare(std::vector<Checkerpiece*> checkers, Square* current, Square* future, Square* temp, const int& currentIndex)
 {
     if(friendly(checkers, temp, future))
@@ -192,13 +189,15 @@ bool Moveable::jumpBySquare(std::vector<Checkerpiece*> checkers, Square* current
     return false;
 }
 
-/*
-*	jumpByChecker checks if the user can perform a jump by selecting the checker they want to jump over.
-*	Future square is the square to jump over (should be occupied).
-*	Temp square is the square to land on following the jump (should be unoccipied).
-*	First we check to make sure that the moving checker isn't jumping over a friendly checker.
-*	Then we check the distance from future->temp and then current->future by calling moveable(). 
-*/
+
+/**
+ * jumpByChecker: verifica si el jugador puede realizar un salto si escoge algún cuadro para moverse.
+ * El siguiente cuadro es el cuadro donde está destinado a saltar pero este debe estar desocupado.
+ * Cuadro temporal es el cuadro de en medio por lo que si deberia de estar ocupado.
+ * Primero verificar si el salto del jugador no cae encima de un pieza aliada
+ * Se verifica la distancia entre el cuadro actual al temporal para seguir al cudro final/siguiente llamando a la metodo moveable()
+ * */
+
 bool Moveable::jumpByChecker(std::vector<Checkerpiece*> checkers, Square* current, Square* future, Square* temp, const int& currentIndex)
 {
     if(friendly(checkers, temp, future))
@@ -210,11 +209,17 @@ bool Moveable::jumpByChecker(std::vector<Checkerpiece*> checkers, Square* curren
     return false;
 }
 
-/* 
+/*
 *	We check if the current checker is trying to move over a friendly checker by scanning the temp/future square's
-*	alongside every other checker that the player has on the board to see if their positions match. 
+*	alongside every other checker that the player has on the board to see if their positions match.
 *	If there's a match we return true. Return false otherwise.
 */
+
+/**
+ * Verificamos si la ficha actual está tratando de pasar sobre una ficha aliada escaneando el cuadro temporal/futuro
+ * junto con cualquier otra ficha que el jugador tenga en el tablero para ver si sus posiciones coinciden.
+ * Si hay una coincidencia, devolvemos verdadero. Devuelve false en caso contrario.
+ * */
 bool Moveable::friendly(const vector<Checkerpiece*>& checkers, Square* temp, Square* future)
 {
     vector<Checkerpiece*>::const_iterator it;
@@ -233,16 +238,14 @@ bool Moveable::friendly(const vector<Checkerpiece*>& checkers, Square* future)
     return false;
 }
 
-/*
-*	The hasJump function figures out if the active checkerpiece in play can jump.
-*	We can the enemy checkers to see if one is jumpeable by the active checker.
-*	First checking if the active checker is king,
-*	if it is not a king then we check which king row it has,
-*	and then we iterate through several cases to see if the active checker can safely 
-*	land a jump over the enemy (by making sure that landing space is unoccupied).
-*	We assume that the active checker is not within the enemy checker list.
-*	There's also the kitty corner jump bug (documentation in Checkerboard.hpp) for cases 135, 225.
-*/
+/**
+ * La función hasJump determina si la ficha activa en juego puede saltar. Podemos ver las fichas enemigas para ver si una es saltable por la ficha activa.
+ * Primero comprobando si la ficha activa es el rey, si no es un rey, verificamos qué fila de rey tiene,
+ * y luego iteramos a través de varios casos para ver si el verificador activo puede
+ * aterrizar un salto sobre el enemigo (asegurándose de que el espacio de aterrizaje esté desocupado).
+ * Asumimos que la ficha activa no está dentro de la lista de fichas enemigas.
+ * También está el error de salto de la esquina del gatito (documentación en Checkerboard.hpp) para los casos 135, 225.
+ * */
 bool Moveable::hasJump(Checkerpiece* checker, const vector<Checkerpiece*>& enemy, Checkerboard*& tempBoard)
 {
     Square* future;
@@ -358,6 +361,14 @@ bool Moveable::hasJump(Checkerpiece* checker, const vector<Checkerpiece*>& enemy
 *	jumping over, and where we'll land (futureX/Y), 
 *	(in that order, so coords[0],coords[1] = currentX, currentY).
 */
+
+/**
+ * Similar a hasJump, buscamos para ver si el verificador activo puede saltar,
+ * pero en lugar de devolver un valor booleano, devolvemos las coordenadas de
+ * la ficha actual, la ficha enemiga que estamos
+ * saltando y donde aterrizaremos (futuroX/Y),
+ * (en ese orden, coords[0],coords[1] = currentX, currentY).
+ * */
 vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece*>& enemy, Checkerboard*& tempBoard)
 {
     // the coords where the active checker would land after jumping, and the coords of the checker to jump over
