@@ -53,6 +53,7 @@ void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseO
     {
         for(int j = 0; j < SQUARES_HORIZONTAL; ++j)
         {
+
             if((j % 2 == 0 && i % 2 == 0) || (j % 2 != 0 && i % 2 != 0))
                 squareArray[i][j]->setFillColor(sf::Color(231,179,133)); //Color beige
             else
@@ -61,6 +62,7 @@ void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseO
             // erase any previous green square highlight
             squareArray[i][j]->setOutlineThickness(0);
             squareArray[i][j]->setOutlineColor(sf::Color(0, 0, 0, 255));
+
 
             // find the square in the array that a player is currently mousing over (have to use long version instead of the offset because the offset keeps changing)
             if(squareArray[i][j] == findSquare(mouseOverX, mouseOverY))
@@ -93,12 +95,14 @@ void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseO
     sf::RectangleShape tempRect;
     tempRect.setPosition(static_cast<float>(currentX), static_cast<float>(currentY));
 
+
     for(int i = 0; i < SQUARES_VERTICAL; ++i)
     {
         for(int j = 0; j < SQUARES_HORIZONTAL; ++j)
         {
             if((j % 2 == 0 && i % 2 == 0) || (j % 2 != 0 && i % 2 != 0))
                 squareArray[i][j]->setFillColor(sf::Color(231,179,133)); //Color beige
+
             else
                 squareArray[i][j]->setFillColor(sf::Color(92,37,0)); //Color cafe
 
@@ -133,12 +137,79 @@ void Checkerboard::drawGrid(sf::RenderWindow& window, int mouseOverX, int mouseO
                     // give the move to square a nice magenta highlight
                     squareArray[i][j]->setOutlineThickness(-SQUARES_VERTICAL);
                     squareArray[i][j]->setOutlineColor(sf::Color::Magenta);
+
                 }
             }
 
             // prepare to draw
             squareArray[i][j]->setPosition(static_cast<float>(startingX), static_cast<float>(startingY));
             squareArray[i][j]->setSize(sf::Vector2f(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET)));
+
+            //ACA SE VA A NUMERAR LAS FILAS Y LAS COLUMNAS
+
+            //Rectangulo vertical cafe
+            sf::RectangleShape tile1;
+            tile1.setSize(sf::Vector2f(80.f,670.f));
+            tile1.setPosition(sf::Vector2f(600,0));
+            tile1.setFillColor(sf::Color(139,69,19)); //Color cafe
+            window.draw(tile1);
+
+            //Rectangulo horizontal
+            sf::RectangleShape tile2;
+            tile2.setSize(sf::Vector2f(650.f,70.f));
+            tile2.setPosition(sf::Vector2f(0,600));
+            tile2.setFillColor(sf::Color(139,69,19)); //Color cafe
+            window.draw(tile2);
+
+            //Aca se van a numerar las columnas del tablero (A-H)
+            sf:: Text textA, textB, textC, textD , textE, textF, textG, textH;
+            sf:: Font font;
+            font.loadFromFile("../resources/Gayathri-Regular.otf");
+            //Seleccionar fuente
+            textA.setFont(font); textB.setFont(font); textC.setFont(font); textD.setFont(font);
+            textE.setFont(font); textF.setFont(font); textG.setFont(font); textH.setFont(font);
+            //Seleccionar el string a mostrar
+            textA.setString("A"); textB.setString("B"); textC.setString("C");textD.setString("D");
+            textE.setString("E"); textF.setString("F"); textG.setString("G");textH.setString("H");
+            //Seleccionar el tamaño
+            textA.setCharacterSize(22); textB.setCharacterSize(22);textC.setCharacterSize(22);
+            textD.setCharacterSize(22); textE.setCharacterSize(22); textF.setCharacterSize(22);
+            textG.setCharacterSize(22); textH.setCharacterSize(22);
+            //Seleccionar el color
+            textA.setFillColor(sf::Color::Black); textB.setFillColor(sf::Color::Black); textC.setFillColor(sf::Color::Black);
+            textD.setFillColor(sf::Color::Black); textE.setFillColor(sf::Color::Black);textF.setFillColor(sf::Color::Black);
+            textG.setFillColor(sf::Color::Black); textH.setFillColor(sf::Color::Black);
+            //Seleccionar posicion del texto
+            textA.setPosition(sf::Vector2f(30,620)); textB.setPosition(sf::Vector2f(105,620));textC.setPosition(sf::Vector2f(180,620));
+            textD.setPosition(sf::Vector2f(255,620)); textE.setPosition(sf::Vector2f(330,620)); textF.setPosition(sf::Vector2f(410,620));
+            textG.setPosition(sf::Vector2f(480,620));textH.setPosition(sf::Vector2f(550,620));
+            //Mostrar en pantalla
+            window.draw(textA); window.draw(textB); window.draw(textC); window.draw(textD);
+            window.draw(textE); window.draw(textF); window.draw(textG); window.draw(textH);
+
+            //Aca se van a numerar las filas del tablero (1-8)
+            sf:: Text text1, text2, text3, text4 , text5, text6, text7, text8;
+            //Seleccionar fuente
+            text1.setFont(font); text2.setFont(font); text3.setFont(font); text4.setFont(font);
+            text5.setFont(font); text6.setFont(font); text7.setFont(font); text8.setFont(font);
+            //Seleccionar el string a mostrar
+            text1.setString("1"); text2.setString("2"); text3.setString("3");text4.setString("4");
+            text5.setString("5"); text6.setString("6"); text7.setString("7");text8.setString("8");
+            //Seleccionar el tamaño
+            text1.setCharacterSize(22); text2.setCharacterSize(22);text3.setCharacterSize(22);
+            text4.setCharacterSize(22); text5.setCharacterSize(22); text6.setCharacterSize(22);
+            text7.setCharacterSize(22); text8.setCharacterSize(22);
+            //Seleccionar el color
+            text1.setFillColor(sf::Color::Black); text2.setFillColor(sf::Color::Black); text3.setFillColor(sf::Color::Black);
+            text4.setFillColor(sf::Color::Black); text5.setFillColor(sf::Color::Black);text6.setFillColor(sf::Color::Black);
+            text7.setFillColor(sf::Color::Black); text8.setFillColor(sf::Color::Black);
+            //Seleccionar posicion del texto
+            text1.setPosition(sf::Vector2f(630,550)); text2.setPosition(sf::Vector2f(630,475));text3.setPosition(sf::Vector2f(630,395));
+            text4.setPosition(sf::Vector2f(630,325)); text5.setPosition(sf::Vector2f(630,250)); text6.setPosition(sf::Vector2f(630,175));
+            text7.setPosition(sf::Vector2f(630,100));text8.setPosition(sf::Vector2f(630,29));
+            //Mostrar en pantalla
+            window.draw(text1); window.draw(text2); window.draw(text3); window.draw(text4);
+            window.draw(text5); window.draw(text6); window.draw(text7); window.draw(text8);
             window.draw(*squareArray[i][j]);
 
             startingX += XOFFSET;
