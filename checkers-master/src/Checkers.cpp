@@ -30,7 +30,7 @@ void Checkers::start()
     const string VIEW_TIMES = "View Fastest Times (in minutes) selected, Main Screen";
 
     //Configuración de la ventana
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE, sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(700, 700), WINDOW_TITLE, sf::Style::Default); //Tamaño de la ventana
     window.setVerticalSyncEnabled(true);
     window.setPosition(sf::Vector2i(WINDOW_POSITION_X, WINDOW_POSITION_Y));
 
@@ -50,12 +50,12 @@ void Checkers::start()
     sf::Text menuMessage, menuTitle;
     menuTitle.setFont(font);
     menuTitle.setCharacterSize(WINDOW_WIDTH / 40);
-    menuTitle.setPosition(0, 0); //dibujar en la esquina superior izquierda de la ventana
-    menuTitle.setColor(sf::Color::Red);
+    menuTitle.setPosition(250,580); //TITULO CHECKERS
+    menuTitle.setColor(sf::Color(139,69,19));  // Color cafe
     menuTitle.setString(TITLE);
     menuMessage.setFont(font);
     menuMessage.setCharacterSize(WINDOW_WIDTH / 40);
-    menuMessage.setPosition(0, WINDOW_HEIGHT / 40); // Dibujar debajo del titulo
+    menuMessage.setPosition(198,600); // INSTRUCCIONES P,C,T,R
     menuMessage.setColor(sf::Color::Black);
     menuMessage.setString(MAIN_MENU);
 
@@ -99,6 +99,73 @@ void Checkers::start()
         window.draw(menuTitle);
         window.draw(menuMessage);
         animation(window, mouseOverX, mouseOverY);
+
+        //Aca se crea la columna y fila para la numeracion
+
+        //Rectangulo vertical
+        sf::RectangleShape tile1;
+        tile1.setSize(sf::Vector2f(100.f,450.f));
+        tile1.setPosition(sf::Vector2f(600,4));
+        tile1.setFillColor(sf::Color(139,69,19)); //Color cafe
+        window.draw(tile1);
+
+        //Rectangulo horizontal
+        sf::RectangleShape tile2;
+        tile2.setSize(sf::Vector2f(750.f,100.f));
+        tile2.setPosition(sf::Vector2f(0,454));
+        tile2.setFillColor(sf::Color(139,69,19)); //Color cafe
+        window.draw(tile2);
+
+
+        //Aca se van a numerar las columnas del tablero (A-H)
+        sf:: Text textA, textB, textC, textD , textE, textF, textG, textH;
+        sf:: Font font;
+        font.loadFromFile("../resources/Gayathri-Regular.otf");
+        //Seleccionar fuente
+        textA.setFont(font); textB.setFont(font); textC.setFont(font); textD.setFont(font);
+        textE.setFont(font); textF.setFont(font); textG.setFont(font); textH.setFont(font);
+        //Seleccionar el string a mostrar
+        textA.setString("A"); textB.setString("B"); textC.setString("C");textD.setString("D");
+        textE.setString("E"); textF.setString("F"); textG.setString("G");textH.setString("H");
+        //Seleccionar el tamaño
+        textA.setCharacterSize(22); textB.setCharacterSize(22);textC.setCharacterSize(22);
+        textD.setCharacterSize(22); textE.setCharacterSize(22); textF.setCharacterSize(22);
+        textG.setCharacterSize(22); textH.setCharacterSize(22);
+        //Seleccionar el color
+        textA.setFillColor(sf::Color::Black); textB.setFillColor(sf::Color::Black); textC.setFillColor(sf::Color::Black);
+        textD.setFillColor(sf::Color::Black); textE.setFillColor(sf::Color::Black);textF.setFillColor(sf::Color::Black);
+        textG.setFillColor(sf::Color::Black); textH.setFillColor(sf::Color::Black);
+        //Seleccionar posicion del texto
+        textA.setPosition(sf::Vector2f(30,480)); textB.setPosition(sf::Vector2f(105,480));textC.setPosition(sf::Vector2f(180,480));
+        textD.setPosition(sf::Vector2f(255,480)); textE.setPosition(sf::Vector2f(330,480)); textF.setPosition(sf::Vector2f(410,480));
+        textG.setPosition(sf::Vector2f(480,480));textH.setPosition(sf::Vector2f(550,480));
+        //Mostrar en pantalla
+        window.draw(textA); window.draw(textB); window.draw(textC); window.draw(textD);
+        window.draw(textE); window.draw(textF); window.draw(textG); window.draw(textH);
+
+        //Aca se van a numerar las filas del tablero (1-8)
+        sf:: Text text1, text2, text3, text4 , text5, text6, text7, text8;
+        //Seleccionar fuente
+        text1.setFont(font); text2.setFont(font); text3.setFont(font); text4.setFont(font);
+        text5.setFont(font); text6.setFont(font); text7.setFont(font); text8.setFont(font);
+        //Seleccionar el string a mostrar
+        text1.setString("1"); text2.setString("2"); text3.setString("3");text4.setString("4");
+        text5.setString("5"); text6.setString("6"); text7.setString("7");text8.setString("8");
+        //Seleccionar el tamaño
+        text1.setCharacterSize(22); text2.setCharacterSize(22);text3.setCharacterSize(22);
+        text4.setCharacterSize(22); text5.setCharacterSize(22); text6.setCharacterSize(22);
+        text7.setCharacterSize(22); text8.setCharacterSize(22);
+        //Seleccionar el color
+        text1.setFillColor(sf::Color::Black); text2.setFillColor(sf::Color::Black); text3.setFillColor(sf::Color::Black);
+        text4.setFillColor(sf::Color::Black); text5.setFillColor(sf::Color::Black);text6.setFillColor(sf::Color::Black);
+        text7.setFillColor(sf::Color::Black); text8.setFillColor(sf::Color::Black);
+        //Seleccionar posicion del texto
+        text1.setPosition(sf::Vector2f(620,400)); text2.setPosition(sf::Vector2f(620,345));text3.setPosition(sf::Vector2f(620,290));
+        text4.setPosition(sf::Vector2f(620,235)); text5.setPosition(sf::Vector2f(620,180)); text6.setPosition(sf::Vector2f(620,125));
+        text7.setPosition(sf::Vector2f(620,70));text8.setPosition(sf::Vector2f(620,15));
+        //Mostrar en pantalla
+        window.draw(text1); window.draw(text2); window.draw(text3); window.draw(text4);
+        window.draw(text5); window.draw(text6); window.draw(text7); window.draw(text8);
         window.display();
     }
 }
@@ -171,7 +238,7 @@ void Checkers::animation(sf::RenderWindow& window, const int& mouseOverX, const 
 {
     /* La animación es de un juego de damas simuladas. Ocupa aproximadamente 3/4 de la ventana */
     // restablecer sstartingstarting, y k
-    int startingX = 0, startingY = WINDOW_HEIGHT / 4;
+    int startingX = 0, startingY = WINDOW_HEIGHT / 150;
     sf::CircleShape circle (WINDOW_WIDTH / (2 * SQUARES_HORIZONTAL));
     circle.setPosition(WINDOW_WIDTH, 0); // deshacerse del círculo construido por defecto 0,0
     sf::RectangleShape square (sf::Vector2f(static_cast<float>(XOFFSET), static_cast<float>(YOFFSET)));
