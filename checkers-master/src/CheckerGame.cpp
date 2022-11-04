@@ -13,6 +13,7 @@ CheckerGame::CheckerGame(sf::RenderWindow& window, const bool& isHuman1, const b
 {
     isPlaying = false; // bucle de juego booleano
     checkerboard = new Checkerboard(window); // crea un nuevo tablero de ajedrez
+    //música para los movimientos 
     SoundManager::getSoundManager()->addSound("../resources/bites-ta-da-winner.ogg");
     SoundManager::getSoundManager()->addSound("../resources/ganar-ganador.ogg");
     SoundManager::getSoundManager()->addSound("../resources/mario-bros-woo-hoo.ogg");
