@@ -379,17 +379,17 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
     int futureX, futureY;
     for(unsigned int i = 0; i != enemy.size(); ++i)
     {
-        if(!checker->getKing()) // test only 2 possible jumps depending on KING_ROW
+        if(!checker->getKing()) // se prueba dos posibles movimientos en caso de estar King - Row
         {
-            if(checker->getKingRow() == KING_ROW_7) // the current check is moving southward
+            if(checker->getKingRow() == KING_ROW_7) // la pieza actual se mueve en dirección al sur
             {
                 if(enemy[i]->getPosition().x != 0 && std::abs(checker->getPosition().x - XOFFSET) == enemy[i]->getPosition().x
-                   && (checker->getPosition().y  + YOFFSET) == enemy[i]->getPosition().y) // first check 225 degrees ( down and to the left )
+                   && (checker->getPosition().y  + YOFFSET) == enemy[i]->getPosition().y) // primero verifique 225 grados (hacia abajo y hacia la izquierda)
                 {
-                    // enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // el comprobador enemigo está dentro del rango de salto, así que verifica si hay un amigo o enemigo dentro del rango de aterrizaje
                     futureX = (int) std::abs(checker->getPosition().x - (2*XOFFSET));
                     futureY = (int) checker->getPosition().y + (2*YOFFSET);
-                    // now see if the landing square is occupied
+                    // ahora mira si la casilla de aterrizaje está ocupada
                     future = tempBoard->findSquare(futureX, futureY);
                     if(future && !future->getOccupied())
                     {
@@ -399,11 +399,11 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
                         coords->at(3) = (int) enemy[i]->getPosition().y;
                         coords->at(4) = futureX;
                         coords->at(5) = futureY;
-                        return coords; // return coords of jump
+                        return coords; // retornar la coordenada de los saltos
                     }
                 }
                 else if((checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x
-                        && (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y) // now check 315 degrees ( down and to the right )
+                        && (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y) //ahora verifique 315 grados (abajo y a la derecha)
                 {
                     // enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
                     futureX = (int) checker->getPosition().x + (2*XOFFSET);
