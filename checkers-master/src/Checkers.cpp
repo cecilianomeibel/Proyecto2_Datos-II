@@ -30,7 +30,7 @@ void Checkers::start()
     const string VIEW_TIMES = "View Fastest Times (in minutes) selected, Main Screen";
 
     //Configuración de la ventana
-    sf::RenderWindow window(sf::VideoMode(700, 700), WINDOW_TITLE, sf::Style::Default); //Tamaño de la ventana
+    sf::RenderWindow window(sf::VideoMode(670, 670), WINDOW_TITLE, sf::Style::Default); //Tamaño de la ventana
     window.setVerticalSyncEnabled(true);
     window.setPosition(sf::Vector2i(WINDOW_POSITION_X, WINDOW_POSITION_Y));
 
@@ -50,12 +50,12 @@ void Checkers::start()
     sf::Text menuMessage, menuTitle;
     menuTitle.setFont(font);
     menuTitle.setCharacterSize(WINDOW_WIDTH / 40);
-    menuTitle.setPosition(250,580); //TITULO CHECKERS
+    menuTitle.setPosition(250,550); //TITULO CHECKERS
     menuTitle.setColor(sf::Color(139,69,19));  // Color cafe
     menuTitle.setString(TITLE);
     menuMessage.setFont(font);
     menuMessage.setCharacterSize(WINDOW_WIDTH / 40);
-    menuMessage.setPosition(198,600); // INSTRUCCIONES P,C,T,R
+    menuMessage.setPosition(198,575); // INSTRUCCIONES P,C,T,R
     menuMessage.setColor(sf::Color::Black);
     menuMessage.setString(MAIN_MENU);
 
@@ -111,7 +111,7 @@ void Checkers::start()
 
         //Rectangulo horizontal
         sf::RectangleShape tile2;
-        tile2.setSize(sf::Vector2f(750.f,100.f));
+        tile2.setSize(sf::Vector2f(750.f,75.f));
         tile2.setPosition(sf::Vector2f(0,454));
         tile2.setFillColor(sf::Color(139,69,19)); //Color cafe
         window.draw(tile2);
