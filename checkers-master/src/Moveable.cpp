@@ -405,7 +405,7 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
                 else if((checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x
                         && (checker->getPosition().y + YOFFSET) == enemy[i]->getPosition().y) //ahora verifique 315 grados (abajo y a la derecha)
                 {
-                    // enemy checker is within jumpeable range, so check if there is a friendly or enemy withing landing range
+                    // el comprobador enemigo está dentro del rango de salto, así que verifica si hay un amigo o enemigo dentro del rango de aterrizaje
                     futureX = (int) checker->getPosition().x + (2*XOFFSET);
                     futureY = (int) checker->getPosition().y + (2*YOFFSET);
                     future = tempBoard->findSquare(futureX, futureY);
@@ -417,11 +417,11 @@ vector<int>* Moveable::findJump(Checkerpiece* checker, const vector<Checkerpiece
                         coords->at(3) = (int) enemy[i]->getPosition().y;
                         coords->at(4) = futureX;
                         coords->at(5) = futureY;
-                        return coords; // return coords of jump
+                        return coords; // retorna la coordenada de los saltos
                     }
                 }
             }
-            else // the current checker is moving northward up the board
+            else // la pieza actual se mueve hacia el norte de la pieza
             {
                 if(enemy[i]->getPosition().y != 0 && (checker->getPosition().x + XOFFSET) == enemy[i]->getPosition().x
                    && std::abs(checker->getPosition().y - YOFFSET) == enemy[i]->getPosition().y) // first check 45 degrees ( up and to the right )
